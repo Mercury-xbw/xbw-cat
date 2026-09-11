@@ -268,6 +268,8 @@ function setupTouchGestures() {
   let initialPanCenter = { x: 0, y: 0 };
   let initialCamPos = new THREE.Vector3();
   let initialTarget = new THREE.Vector3();
+  let initialDir = new THREE.Vector3();
+  let initialDist = 3.25;
 
   canvas.addEventListener("touchstart", (e) => {
     if (e.touches.length === 2) {
@@ -280,6 +282,8 @@ function setupTouchGestures() {
       };
       initialCamPos.copy(camera.position);
       initialTarget.copy(controls.target);
+      initialDist = initialCamPos.distanceTo(initialTarget);
+      initialDir.subVectors(initialCamPos, initialTarget).normalize();
     }
   }, { passive: true });
 
@@ -289,17 +293,11 @@ function setupTouchGestures() {
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const currentDistance = Math.hypot(dx, dy);
 
-      // 1. 双指捏合放大与缩小 (Pinch Zoom)
-      if (Math.abs(currentDistance - initialDistance) > 3) {
-        const factor = initialDistance / currentDistance;
-        const currentDist = initialCamPos.distanceTo(initialTarget);
-        const newDist = clamp(currentDist * factor, 1.1, 5.8);
+      // 1. 计算双指捏合缩放距离 (Zoom Distance)
+      const zoomFactor = initialDistance / currentDistance;
+      const newDist = clamp(initialDist * zoomFactor, 1.0, 5.8);
 
-        const dir = new THREE.Vector3().subVectors(initialCamPos, initialTarget).normalize();
-        camera.position.copy(initialTarget).addScaledVector(dir, newDist);
-      }
-
-      // 2. 双指同向移动平移屏幕视角 (Two-Finger Pan)
+      // 2. 计算双指平移向量 (Pan Vector)
       const currentCenter = {
         x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
         y: (e.touches[0].clientY + e.touches[1].clientY) / 2
@@ -309,13 +307,14 @@ function setupTouchGestures() {
 
       const right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
       const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
-
       const panVec = new THREE.Vector3()
         .addScaledVector(right, -deltaX)
         .addScaledVector(up, deltaY);
 
-      controls.target.copy(initialTarget).add(panVec);
-      camera.position.copy(initialCamPos).add(panVec);
+      // 3. 融合平移与缩放：先应用平移目标点，再叠加缩放视角距离
+      const newTarget = new THREE.Vector3().copy(initialTarget).add(panVec);
+      controls.target.copy(newTarget);
+      camera.position.copy(newTarget).addScaledVector(initialDir, newDist);
 
       controls.update();
     }
