@@ -20,7 +20,13 @@
     <canvas id="canvas3d" aria-label="3D 角色舞台"></canvas>
 
     <section class="top-hud" aria-label="状态">
-      <div class="brand">宝宝</div>
+      <div class="top-bar">
+        <div class="brand">宝宝</div>
+        <button class="reset-btn" id="resetBtn" type="button" title="视角复位">
+          <span>🎯</span>
+          <span>复位</span>
+        </button>
+      </div>
       <div class="speech" id="speechText">今天也想被你偏爱。</div>
       <div class="meters">
         <div class="meter">
@@ -38,10 +44,6 @@
           <strong id="energyValue">76</strong>
         </div>
         <div class="mood" id="moodText">有点害羞</div>
-        <button class="reset-btn" id="resetBtn" type="button" title="视角复位">
-          <span>🎯</span>
-          <span>复位</span>
-        </button>
       </div>
     </section>
 
