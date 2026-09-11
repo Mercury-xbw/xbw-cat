@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>宝宝</title>
+  <link rel="stylesheet" href="./styles.css" />
+
+  <!-- 引入离线/双击兼容的 Three.js 核心与 Loader 插件 -->
+  <script src="./vendor/js/three.min.js"></script>
+  <script src="./vendor/js/fflate.min.js"></script>
+  <script src="./vendor/js/GLTFLoader.js"></script>
+  <script src="./vendor/js/FBXLoader.js"></script>
+  <script src="./vendor/js/OrbitControls.js"></script>
+</head>
+
+<body>
+  <main class="game" aria-label="宝宝">
+    <canvas id="canvas3d" aria-label="3D 角色舞台"></canvas>
+
+    <section class="top-hud" aria-label="状态">
+      <div class="brand">宝宝</div>
+      <div class="speech" id="speechText">今天也想被你偏爱。</div>
+      <div class="meters">
+        <div class="meter">
+          <span>心动</span>
+          <div class="meter-track">
+            <div class="meter-fill love" id="loveFill"></div>
+          </div>
+          <strong id="loveValue">52</strong>
+        </div>
+        <div class="meter">
+          <span>电量</span>
+          <div class="meter-track">
+            <div class="meter-fill energy" id="energyFill"></div>
+          </div>
+          <strong id="energyValue">76</strong>
+        </div>
+        <div class="mood" id="moodText">有点害羞</div>
+      </div>
+    </section>
+
+    <div class="effect-layer" id="effectLayer" aria-hidden="true"></div>
+
+    <section class="bottom-hud" aria-label="互动">
+      <button class="mic-button" id="micButton" type="button">
+        <span class="button-icon">🎙</span>
+        <span id="micLabel">按住说话</span>
+      </button>
+
+      <nav class="action-grid" aria-label="动作按钮">
+        <button class="action-button" type="button" data-action="poke">
+          <span class="button-icon">👆</span>
+          <span>戳戳</span>
+        </button>
+        <button class="action-button" type="button" data-action="hug">
+          <span class="button-icon">♡</span>
+          <span>抱抱</span>
+        </button>
+        <button class="action-button" type="button" data-action="boba">
+          <span class="button-icon">🧋</span>
+          <span>奶茶</span>
+        </button>
+        <button class="action-button" type="button" data-action="flower">
+          <span class="button-icon">💐</span>
+          <span>送花</span>
+        </button>
+        <button class="action-button" type="button" data-action="quote">
+          <span class="button-icon">💌</span>
+          <span>情话</span>
+        </button>
+        <button class="action-button" type="button" data-action="sleep">
+          <span class="button-icon">☾</span>
+          <span>晚安</span>
+        </button>
+      </nav>
+    </section>
+
+    <section class="loader" id="loader" aria-live="polite">
+      <div class="spinner" id="loaderSpinner"></div>
+      <strong id="loaderTitle">正在召唤 3D 男友</strong>
+      <p id="loaderText">模型和动作马上就好。</p>
+      <input type="file" id="filePicker" multiple accept=".glb,.gltf,.fbx" style="display: none;" />
+      <button class="file-pick-btn" id="filePickBtn" type="button" style="display: none;">
+        📂 点击手动选择 5 个模型文件 (model.glb + 4个动作)
+      </button>
+    </section>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+
+</html>
