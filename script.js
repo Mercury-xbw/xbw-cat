@@ -264,46 +264,40 @@ function setupUi() {
 }
 
 function setupTouchGestures() {
-  let initialDistance = 0;
-  let initialPanCenter = { x: 0, y: 0 };
-  let initialCamPos = new THREE.Vector3();
-  let initialTarget = new THREE.Vector3();
-  let initialDir = new THREE.Vector3();
-  let initialDist = 3.25;
+  let lastTouchDist = 0;
+  let lastCenter = { x: 0, y: 0 };
+  let isMultiTouching = false;
 
   canvas.addEventListener("touchstart", (e) => {
-    if (e.touches.length === 2) {
+    if (e.touches.length >= 2) {
+      isMultiTouching = true;
+      controls.enabled = false; // 暂时关闭 OrbitControls，防止单指旋转与双手手势竞争
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
-      initialDistance = Math.hypot(dx, dy);
-      initialPanCenter = {
+      lastTouchDist = Math.hypot(dx, dy);
+      lastCenter = {
         x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
         y: (e.touches[0].clientY + e.touches[1].clientY) / 2
       };
-      initialCamPos.copy(camera.position);
-      initialTarget.copy(controls.target);
-      initialDist = initialCamPos.distanceTo(initialTarget);
-      initialDir.subVectors(initialCamPos, initialTarget).normalize();
     }
-  }, { passive: true });
+  }, { passive: false });
 
   canvas.addEventListener("touchmove", (e) => {
-    if (e.touches.length === 2 && initialDistance > 0) {
+    if (e.touches.length >= 2 && lastTouchDist > 0) {
+      if (e.cancelable) e.preventDefault(); // 拦截移动端浏览器默认网页缩放/下拉刷新
+
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const currentDistance = Math.hypot(dx, dy);
+      const currTouchDist = Math.hypot(dx, dy);
 
-      // 1. 计算双指捏合缩放距离 (Zoom Distance)
-      const zoomFactor = initialDistance / currentDistance;
-      const newDist = clamp(initialDist * zoomFactor, 1.0, 5.8);
-
-      // 2. 计算双指平移向量 (Pan Vector)
-      const currentCenter = {
+      const currCenter = {
         x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
         y: (e.touches[0].clientY + e.touches[1].clientY) / 2
       };
-      const deltaX = (currentCenter.x - initialPanCenter.x) * 0.0035;
-      const deltaY = (currentCenter.y - initialPanCenter.y) * 0.0035;
+
+      // 1. 计算双指同向平移 (Two-Finger Pan)
+      const deltaX = (currCenter.x - lastCenter.x) * 0.003;
+      const deltaY = (currCenter.y - lastCenter.y) * 0.003;
 
       const right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
       const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
@@ -311,20 +305,39 @@ function setupTouchGestures() {
         .addScaledVector(right, -deltaX)
         .addScaledVector(up, deltaY);
 
-      // 3. 融合平移与缩放：先应用平移目标点，再叠加缩放视角距离
-      const newTarget = new THREE.Vector3().copy(initialTarget).add(panVec);
-      controls.target.copy(newTarget);
-      camera.position.copy(newTarget).addScaledVector(initialDir, newDist);
+      controls.target.add(panVec);
+
+      // 2. 计算双指捏合放缩 (Delta Pinch Zoom)
+      if (currTouchDist > 0 && Math.abs(currTouchDist - lastTouchDist) > 0.5) {
+        const scaleFactor = lastTouchDist / currTouchDist;
+        const currentDist = camera.position.distanceTo(controls.target);
+        const newDist = clamp(currentDist * scaleFactor, 1.1, 5.5);
+
+        const dir = new THREE.Vector3().subVectors(camera.position, controls.target).normalize();
+        camera.position.copy(controls.target).addScaledVector(dir, newDist);
+      } else {
+        camera.position.add(panVec);
+      }
 
       controls.update();
-    }
-  }, { passive: true });
 
-  canvas.addEventListener("touchend", (e) => {
-    if (e.touches.length < 2) {
-      initialDistance = 0;
+      lastTouchDist = currTouchDist;
+      lastCenter = currCenter;
     }
-  });
+  }, { passive: false });
+
+  const endTouch = (e) => {
+    if (e.touches.length < 2) {
+      lastTouchDist = 0;
+      if (isMultiTouching) {
+        isMultiTouching = false;
+        controls.enabled = true; // 恢复 OrbitControls 视角控制
+      }
+    }
+  };
+
+  canvas.addEventListener("touchend", endTouch, { passive: true });
+  canvas.addEventListener("touchcancel", endTouch, { passive: true });
 }
 
 function resetCameraView() {
