@@ -361,7 +361,7 @@ async function handleManualFileSelect(e) {
 }
 
 async function fetchArrayBuffer(url) {
-  const safeUrl = encodeURI(url);
+  const safeUrl = encodeURI(decodeURI(url));
   const res = await fetch(safeUrl);
   if (!res.ok) throw new Error(`HTTP ${res.status} when fetching ${safeUrl}`);
   return await res.arrayBuffer();
