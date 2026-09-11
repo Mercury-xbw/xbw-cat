@@ -109,6 +109,11 @@ let audioChunks = [];
 let mediaStream = null;
 let lastRecognizedText = "";
 
+const gameEl = document.querySelector(".game");
+let speechTimer = 0;
+let userActiveTime = performance.now();
+let isImmersionMode = false;
+
 let scene;
 let camera;
 let renderer;
@@ -231,6 +236,10 @@ function setupScene() {
 function setupUi() {
   window.addEventListener("resize", resize);
 
+  ['pointerdown', 'touchstart', 'click', 'keydown'].forEach((evt) => {
+    window.addEventListener(evt, wakeUpUi, { passive: true });
+  });
+
   let isMultiTouchGesture = false;
 
   canvas.addEventListener("touchstart", (e) => {
@@ -273,6 +282,36 @@ function setupUi() {
   const resetBtn = document.querySelector("#resetBtn");
   if (resetBtn) {
     resetBtn.addEventListener("click", resetCameraView);
+  }
+
+  const uiToggleBtn = document.querySelector("#uiToggleBtn");
+  if (uiToggleBtn) {
+    uiToggleBtn.addEventListener("click", toggleImmersionMode);
+  }
+}
+
+function wakeUpUi() {
+  userActiveTime = performance.now();
+  if (gameEl && gameEl.classList.contains("is-dimmed")) {
+    gameEl.classList.remove("is-dimmed");
+  }
+}
+
+function toggleImmersionMode(e) {
+  if (e) e.stopPropagation();
+  isImmersionMode = !isImmersionMode;
+  const icon = document.querySelector("#uiToggleIcon");
+  const label = document.querySelector("#uiToggleLabel");
+
+  if (isImmersionMode) {
+    gameEl.classList.add("is-hidden-ui");
+    if (icon) icon.textContent = "🙈";
+    if (label) label.textContent = "完整";
+  } else {
+    gameEl.classList.remove("is-hidden-ui");
+    if (icon) icon.textContent = "👁️";
+    if (label) label.textContent = "沉浸";
+    say("已恢复完整界面~ ✨");
   }
 }
 
@@ -602,10 +641,18 @@ function updateMeters() {
 }
 
 function say(text) {
+  if (!text) return;
+  wakeUpUi();
   speech.textContent = text;
+  speech.classList.remove("is-hidden");
   speech.classList.remove("pop");
   requestAnimationFrame(() => speech.classList.add("pop"));
   window.setTimeout(() => speech.classList.remove("pop"), 210);
+
+  window.clearTimeout(speechTimer);
+  speechTimer = window.setTimeout(() => {
+    speech.classList.add("is-hidden");
+  }, 4200);
 }
 
 async function startListening() {
@@ -913,6 +960,12 @@ function animate() {
 
   controls.update();
   renderer.render(scene, camera);
+
+  if (!isImmersionMode && performance.now() - userActiveTime > 4500) {
+    if (gameEl && !gameEl.classList.contains("is-dimmed")) {
+      gameEl.classList.add("is-dimmed");
+    }
+  }
 
   if (performance.now() - lastInteraction > 18000 && energy > 8) {
     lastInteraction = performance.now();

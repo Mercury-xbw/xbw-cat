@@ -74,19 +74,53 @@ button {
   z-index: 5;
 }
 
+.top-hud,
+.bottom-hud {
+  transition: opacity 350ms cubic-bezier(0.16, 1, 0.3, 1), transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 闲置自动淡出 / 沉浸极简模式 */
+.game.is-dimmed .top-hud,
+.game.is-dimmed .bottom-hud {
+  opacity: 0.22;
+}
+
+.game.is-dimmed .top-hud:hover,
+.game.is-dimmed .bottom-hud:hover,
+.game.is-dimmed .top-hud:focus-within,
+.game.is-dimmed .bottom-hud:focus-within {
+  opacity: 1;
+}
+
+.game.is-hidden-ui .top-hud,
+.game.is-hidden-ui .bottom-hud,
+.game.is-hidden-ui .speech {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.game.is-hidden-ui #uiToggleBtn {
+  opacity: 0.85 !important;
+  pointer-events: auto !important;
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 99;
+}
+
 .top-hud {
   top: 0;
   left: 0;
   right: 0;
   display: grid;
   justify-items: center;
-  gap: 10px;
-  padding: max(14px, env(safe-area-inset-top)) 16px 0;
+  gap: 8px;
+  padding: max(10px, env(safe-area-inset-top)) 14px 0;
   pointer-events: none;
 }
 
 .top-bar {
-  width: min(94vw, 640px);
+  width: min(92vw, 580px);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -94,109 +128,119 @@ button {
 }
 
 .brand {
-  padding: 8px 14px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(36, 31, 47, 0.88);
+  padding: 5px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  background: rgba(36, 31, 47, 0.78);
   color: #fff;
-  box-shadow: 0 14px 34px rgba(36, 31, 47, 0.18);
-  font-size: 14px;
+  box-shadow: 0 8px 20px rgba(36, 31, 47, 0.15);
+  font-size: 13px;
   font-weight: 800;
+  pointer-events: auto;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.top-actions {
+  display: flex;
+  gap: 6px;
   pointer-events: auto;
 }
 
-.reset-btn {
+.top-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 8px 14px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.92);
+  gap: 3px;
+  padding: 5px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.68);
   color: var(--ink);
-  box-shadow: 0 10px 28px rgba(36, 31, 47, 0.12);
-  backdrop-filter: blur(16px);
-  font-size: 13px;
-  font-weight: 800;
+  box-shadow: 0 6px 18px rgba(36, 31, 47, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  font-size: 12px;
+  font-weight: 700;
   cursor: pointer;
   pointer-events: auto;
   transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease;
 }
 
-.reset-btn:hover,
-.reset-btn:active {
-  transform: translateY(-2px);
-  background: #fff;
-  box-shadow: 0 14px 32px rgba(36, 31, 47, 0.18);
+.top-btn:hover,
+.top-btn:active {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 24px rgba(36, 31, 47, 0.14);
 }
 
 .speech {
-  width: min(88vw, 520px);
-  min-height: 56px;
+  width: min(84vw, 440px);
+  min-height: 38px;
   display: grid;
   place-items: center;
-  padding: 13px 18px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--glass);
-  box-shadow: 0 16px 38px rgba(36, 31, 47, 0.13);
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 10px 28px rgba(36, 31, 47, 0.1);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   text-align: center;
-  font-size: clamp(15px, 2.2vw, 20px);
+  color: var(--ink);
+  font-size: clamp(13px, 1.8vw, 15px);
   font-weight: 700;
   line-height: 1.35;
   pointer-events: none;
-  transition: transform 160ms ease;
+  transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1), transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.speech.is-hidden {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.95);
+  pointer-events: none;
 }
 
 .speech.pop {
-  transform: translateY(-4px) scale(1.02);
+  transform: translateY(-2px) scale(1.02);
 }
 
 .meters {
-  width: min(94vw, 640px);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-  gap: 8px;
-  pointer-events: none;
-}
-
-.meter,
-.mood {
-  min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 10px 28px rgba(36, 31, 47, 0.08);
-  backdrop-filter: blur(16px);
-  pointer-events: none;
-}
-
-.meter {
-  display: grid;
-  grid-template-columns: auto minmax(64px, 1fr) 34px;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 10px;
+  justify-content: center;
+  gap: 10px;
+  padding: 4px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: 0 8px 24px rgba(36, 31, 47, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  pointer-events: auto;
 }
 
-.meter span {
-  color: var(--muted);
-  font-size: 13px;
-  white-space: nowrap;
+.meter-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-.meter strong {
-  text-align: right;
-  font-size: 14px;
+.meter-icon {
+  font-size: 11px;
+  color: var(--rose);
+}
+
+.meter-pill:nth-child(2) .meter-icon {
+  color: var(--sky);
 }
 
 .meter-track {
-  height: 9px;
+  width: 52px;
+  height: 6px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(36, 31, 47, 0.1);
+  background: rgba(36, 31, 47, 0.08);
 }
 
 .meter-fill {
@@ -214,13 +258,19 @@ button {
   background: linear-gradient(90deg, var(--sky), var(--violet));
 }
 
-.mood {
-  display: grid;
-  place-items: center;
-  min-width: 96px;
-  padding: 9px 12px;
-  font-size: 13px;
+.meter-pill strong {
+  font-size: 12px;
+  color: var(--ink);
   font-weight: 800;
+  min-width: 18px;
+}
+
+.mood-pill {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  padding-left: 8px;
+  border-left: 1px solid rgba(36, 31, 47, 0.12);
   white-space: nowrap;
 }
 
@@ -229,19 +279,20 @@ button {
   right: 0;
   bottom: 0;
   display: grid;
-  gap: 10px;
-  padding: 0 16px max(18px, env(safe-area-inset-bottom));
+  gap: 8px;
+  padding: 0 12px max(14px, env(safe-area-inset-bottom));
   pointer-events: none;
 }
 
 .mic-button,
 .action-button {
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.65);
   color: var(--ink);
-  box-shadow: 0 14px 32px rgba(36, 31, 47, 0.14);
-  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 24px rgba(36, 31, 47, 0.1);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   cursor: pointer;
   pointer-events: auto;
   transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease;
@@ -249,14 +300,16 @@ button {
 
 .mic-button {
   justify-self: center;
-  display: inline-grid;
-  grid-template-columns: auto auto;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 46px;
-  padding: 10px 18px;
-  background: #241f2f;
+  gap: 6px;
+  min-height: 38px;
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(36, 31, 47, 0.82);
   color: #fff;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -268,8 +321,8 @@ button {
 .action-grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 9px;
-  width: min(94vw, 760px);
+  gap: 7px;
+  width: min(92vw, 680px);
   justify-self: center;
   pointer-events: none;
 }
@@ -278,10 +331,10 @@ button {
   display: grid;
   justify-items: center;
   align-items: center;
-  gap: 5px;
+  gap: 3px;
   min-width: 0;
-  min-height: 68px;
-  padding: 8px 4px;
+  min-height: 52px;
+  padding: 6px 3px;
 }
 
 .mic-button:hover,
@@ -289,8 +342,8 @@ button {
 .action-button:hover,
 .action-button:focus-visible {
   transform: translateY(-2px);
-  background: #fff;
-  box-shadow: 0 18px 38px rgba(36, 31, 47, 0.18);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 28px rgba(36, 31, 47, 0.14);
 }
 
 .mic-button:hover,
@@ -307,21 +360,21 @@ button {
 .button-icon {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: rgba(36, 31, 47, 0.9);
+  background: rgba(36, 31, 47, 0.82);
   color: #fff;
-  font-size: 17px;
+  font-size: 14px;
   line-height: 1;
 }
 
 .action-button span:last-child {
   max-width: 100%;
   overflow: hidden;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 800;
+  color: rgba(36, 31, 47, 0.8);
+  font-size: 11px;
+  font-weight: 700;
   line-height: 1.15;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -446,56 +499,69 @@ button {
 
 @media (max-width: 720px) {
   .top-hud {
-    padding-inline: 10px;
+    padding-inline: 8px;
   }
 
   .brand {
-    font-size: 13px;
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  .top-btn {
+    padding: 4px 9px;
+    font-size: 11.5px;
   }
 
   .speech {
-    width: min(92vw, 460px);
-    min-height: 52px;
-    padding: 11px 14px;
+    width: min(90vw, 420px);
+    min-height: 34px;
+    padding: 7px 12px;
+    font-size: 13px;
   }
 
   .meters {
-    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 3px 8px;
   }
 
-  .mood {
-    grid-column: 1 / -1;
-    min-height: 36px;
+  .meter-track {
+    width: 36px;
   }
 
   .bottom-hud {
-    padding-inline: 10px;
+    padding-inline: 8px;
   }
 
   .action-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    width: min(94vw, 420px);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 4px;
+    width: min(96vw, 440px);
   }
 
   .action-button {
-    min-height: 62px;
+    min-height: 46px;
+    padding: 5px 2px;
+    border-radius: 12px;
+  }
+
+  .button-icon {
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
+
+  .action-button span:last-child {
+    font-size: 10.5px;
   }
 }
 
 @media (max-width: 380px) {
-  .meter {
-    grid-template-columns: auto minmax(42px, 1fr) 30px;
-    gap: 6px;
-    padding: 8px;
-  }
-
   .action-grid {
-    gap: 7px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
   }
 
-  .action-button span:last-child,
-  .meter span,
-  .mood {
-    font-size: 12px;
+  .action-button {
+    min-height: 48px;
   }
 }

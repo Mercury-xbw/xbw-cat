@@ -19,37 +19,43 @@
   <main class="game" aria-label="宝宝">
     <canvas id="canvas3d" aria-label="3D 角色舞台"></canvas>
 
-    <section class="top-hud" aria-label="状态">
+    <section class="top-hud" id="topHud" aria-label="状态">
       <div class="top-bar">
         <div class="brand">宝宝</div>
-        <button class="reset-btn" id="resetBtn" type="button" title="视角复位">
-          <span>🎯</span>
-          <span>复位</span>
-        </button>
+        <div class="top-actions">
+          <button class="top-btn" id="resetBtn" type="button" title="视角复位">
+            <span>🎯</span>
+            <span>复位</span>
+          </button>
+          <button class="top-btn" id="uiToggleBtn" type="button" title="切换沉浸模式">
+            <span id="uiToggleIcon">👁️</span>
+            <span id="uiToggleLabel">沉浸</span>
+          </button>
+        </div>
       </div>
-      <div class="speech" id="speechText">今天也想被你偏爱。</div>
-      <div class="meters">
-        <div class="meter">
-          <span>心动</span>
+      <div class="speech is-hidden" id="speechText">今天也想被你偏爱。</div>
+      <div class="meters" id="metersBar">
+        <div class="meter-pill">
+          <span class="meter-icon">♥</span>
           <div class="meter-track">
             <div class="meter-fill love" id="loveFill"></div>
           </div>
           <strong id="loveValue">52</strong>
         </div>
-        <div class="meter">
-          <span>电量</span>
+        <div class="meter-pill">
+          <span class="meter-icon">⚡</span>
           <div class="meter-track">
             <div class="meter-fill energy" id="energyFill"></div>
           </div>
           <strong id="energyValue">76</strong>
         </div>
-        <div class="mood" id="moodText">有点害羞</div>
+        <div class="mood-pill" id="moodText">有点害羞</div>
       </div>
     </section>
 
     <div class="effect-layer" id="effectLayer" aria-hidden="true"></div>
 
-    <section class="bottom-hud" aria-label="互动">
+    <section class="bottom-hud" id="bottomHud" aria-label="互动">
       <button class="mic-button" id="micButton" type="button">
         <span class="button-icon">🎙</span>
         <span id="micLabel">按住说话</span>
