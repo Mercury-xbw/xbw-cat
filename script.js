@@ -231,11 +231,26 @@ function setupScene() {
 function setupUi() {
   window.addEventListener("resize", resize);
 
+  let isMultiTouchGesture = false;
+
+  canvas.addEventListener("touchstart", (e) => {
+    if (e.touches.length > 1) {
+      isMultiTouchGesture = true;
+    }
+  }, { passive: true });
+
+  canvas.addEventListener("touchend", (e) => {
+    if (e.touches.length === 0) {
+      window.setTimeout(() => { isMultiTouchGesture = false; }, 120);
+    }
+  }, { passive: true });
+
   canvas.addEventListener("pointerdown", (event) => {
     downPoint = { x: event.clientX, y: event.clientY };
   });
 
   canvas.addEventListener("pointerup", (event) => {
+    if (isMultiTouchGesture) return;
     const moved = Math.hypot(event.clientX - downPoint.x, event.clientY - downPoint.y);
     if (moved > 8) return;
     handleModelTap(event);
@@ -259,85 +274,6 @@ function setupUi() {
   if (resetBtn) {
     resetBtn.addEventListener("click", resetCameraView);
   }
-
-  setupTouchGestures();
-}
-
-function setupTouchGestures() {
-  let lastTouchDist = 0;
-  let lastCenter = { x: 0, y: 0 };
-  let isMultiTouching = false;
-
-  canvas.addEventListener("touchstart", (e) => {
-    if (e.touches.length >= 2) {
-      isMultiTouching = true;
-      controls.enabled = false; // 暂时关闭 OrbitControls，防止单指旋转与双手手势竞争
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      lastTouchDist = Math.hypot(dx, dy);
-      lastCenter = {
-        x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
-        y: (e.touches[0].clientY + e.touches[1].clientY) / 2
-      };
-    }
-  }, { passive: false });
-
-  canvas.addEventListener("touchmove", (e) => {
-    if (e.touches.length >= 2 && lastTouchDist > 0) {
-      if (e.cancelable) e.preventDefault(); // 拦截移动端浏览器默认网页缩放/下拉刷新
-
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const currTouchDist = Math.hypot(dx, dy);
-
-      const currCenter = {
-        x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
-        y: (e.touches[0].clientY + e.touches[1].clientY) / 2
-      };
-
-      // 1. 计算双指同向平移 (Two-Finger Pan)
-      const deltaX = (currCenter.x - lastCenter.x) * 0.003;
-      const deltaY = (currCenter.y - lastCenter.y) * 0.003;
-
-      const right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
-      const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
-      const panVec = new THREE.Vector3()
-        .addScaledVector(right, -deltaX)
-        .addScaledVector(up, deltaY);
-
-      controls.target.add(panVec);
-
-      // 2. 计算双指捏合放缩 (Delta Pinch Zoom)
-      if (currTouchDist > 0 && Math.abs(currTouchDist - lastTouchDist) > 0.5) {
-        const scaleFactor = lastTouchDist / currTouchDist;
-        const currentDist = camera.position.distanceTo(controls.target);
-        const newDist = clamp(currentDist * scaleFactor, 1.1, 5.5);
-
-        const dir = new THREE.Vector3().subVectors(camera.position, controls.target).normalize();
-        camera.position.copy(controls.target).addScaledVector(dir, newDist);
-      } else {
-        camera.position.add(panVec);
-      }
-
-      controls.update();
-
-      lastTouchDist = currTouchDist;
-      lastCenter = currCenter;
-    }
-  }, { passive: false });
-
-  const endTouch = (e) => {
-    if (e.touches.length < 2) {
-      lastTouchDist = 0;
-      if (isMultiTouching) {
-        isMultiTouching = false;
-        controls.enabled = true; // 恢复 OrbitControls 视角控制
-      }
-    }
-  };
-
-  canvas.addEventListener("touchend", endTouch, { passive: true });
-  canvas.addEventListener("touchcancel", endTouch, { passive: true });
 }
 
 function resetCameraView() {
