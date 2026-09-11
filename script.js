@@ -4,10 +4,10 @@ const OrbitControls = THREE.OrbitControls;
 
 const ASSETS = {
   model: "./assets/model.glb",
-  idle: "./assets/Happy Idle.fbx",
-  hitHead: "./assets/Hit On Side Of Head.fbx",
+  idle: "./assets/Happy%20Idle.fbx",
+  hitHead: "./assets/Hit%20On%20Side%20Of%20Head.fbx",
   laugh: "./assets/Laughing.fbx",
-  stumble: "./assets/Jogging Stumble.fbx"
+  stumble: "./assets/Jogging%20Stumble.fbx"
 };
 
 const stateKey = "bestCatBoyfriendState";
@@ -289,10 +289,13 @@ async function loadAvatarAuto() {
     say("看！我好端端站在你面前啦，戳戳我吧~");
 
   } catch (err) {
-    console.warn("自动加载资源受阻（本地双击 file:// 限制），展示离线选择文件界面:", err);
+    console.warn("自动加载资源受阻:", err);
+    const isFileProtocol = location.protocol === 'file:';
     showLoadError(
-      "自动加载模型受阻",
-      "浏览器出于安全限制无法在本地双击(file://)下直接跨目录读取文件。请点击下方按钮，一次性选择那 5 个模型文件即可开启游戏！"
+      isFileProtocol ? "本地双击模式受阻" : "模型载入受阻",
+      isFileProtocol
+        ? "浏览器出于安全限制无法在本地双击(file://)下直接读取文件。请点击下方按钮，一次性选择那 5 个模型文件即可开启游戏！"
+        : `读取 3D 资源失败：${err.message || '网络连接或 URL 错误'}。请刷新重试或手动加载。`
     );
   }
 }
@@ -358,8 +361,9 @@ async function handleManualFileSelect(e) {
 }
 
 async function fetchArrayBuffer(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status} when fetching ${url}`);
+  const safeUrl = encodeURI(url);
+  const res = await fetch(safeUrl);
+  if (!res.ok) throw new Error(`HTTP ${res.status} when fetching ${safeUrl}`);
   return await res.arrayBuffer();
 }
 
