@@ -121,15 +121,16 @@ button {
 }
 
 .meters {
-  width: min(94vw, 640px);
+  width: min(94vw, 680px);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto;
   gap: 8px;
   pointer-events: auto;
 }
 
 .meter,
-.mood {
+.mood,
+.reset-btn {
   min-width: 0;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -182,11 +183,32 @@ button {
 .mood {
   display: grid;
   place-items: center;
-  min-width: 96px;
-  padding: 9px 12px;
+  min-width: 86px;
+  padding: 9px 10px;
   font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
+}
+
+.reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease;
+}
+
+.reset-btn:hover,
+.reset-btn:active {
+  transform: translateY(-2px);
+  background: #fff;
+  box-shadow: 0 14px 32px rgba(36, 31, 47, 0.15);
 }
 
 .bottom-hud {

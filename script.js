@@ -173,12 +173,22 @@ function setupScene() {
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
-  controls.enablePan = false;
-  controls.enableZoom = false;
+  controls.enablePan = true;
+  controls.enableZoom = true;
+  controls.panSpeed = 0.85;
   controls.rotateSpeed = 0.45;
+  controls.zoomSpeed = 0.9;
+  controls.minDistance = 1.2;
+  controls.maxDistance = 6.0;
   controls.target.set(0, 0.92, 0);
-  controls.minPolarAngle = Math.PI * 0.3;
-  controls.maxPolarAngle = Math.PI * 0.58;
+  controls.minPolarAngle = Math.PI * 0.2;
+  controls.maxPolarAngle = Math.PI * 0.65;
+  if (THREE.TOUCH) {
+    controls.touches = {
+      ONE: THREE.TOUCH.ROTATE,
+      TWO: THREE.TOUCH.DOLLY_PAN
+    };
+  }
 
   const hemi = new THREE.HemisphereLight(0xffffff, 0xffb3a8, 1.05);
   scene.add(hemi);
@@ -244,6 +254,20 @@ function setupUi() {
 
   filePickBtn.addEventListener("click", () => filePicker.click());
   filePicker.addEventListener("change", handleManualFileSelect);
+
+  const resetBtn = document.querySelector("#resetBtn");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", resetCameraView);
+  }
+}
+
+function resetCameraView() {
+  controls.target.set(0, 0.92, 0);
+  camera.position.set(0, 1.22, 3.25);
+  camera.lookAt(0, 0.92, 0);
+  controls.update();
+  say("视角已归位，宝宝在正中间啦~ 🎯");
+  playTone("poke");
 }
 
 async function loadAvatarAuto() {
