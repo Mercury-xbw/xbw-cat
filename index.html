@@ -22,6 +22,23 @@
     <section class="top-hud" id="topHud" aria-label="状态">
       <div class="top-bar">
         <div class="brand">宝宝</div>
+        <div class="meters" id="metersBar">
+          <div class="meter-pill">
+            <span class="meter-icon">♥</span>
+            <div class="meter-track">
+              <div class="meter-fill love" id="loveFill"></div>
+            </div>
+            <strong id="loveValue">52</strong>
+          </div>
+          <div class="meter-pill">
+            <span class="meter-icon">⚡</span>
+            <div class="meter-track">
+              <div class="meter-fill energy" id="energyFill"></div>
+            </div>
+            <strong id="energyValue">76</strong>
+          </div>
+          <div class="mood-pill" id="moodText">有点害羞</div>
+        </div>
         <div class="top-actions">
           <button class="top-btn" id="resetBtn" type="button" title="视角复位">
             <span>🎯</span>
@@ -34,23 +51,6 @@
         </div>
       </div>
       <div class="speech is-hidden" id="speechText">今天也想被你偏爱。</div>
-      <div class="meters" id="metersBar">
-        <div class="meter-pill">
-          <span class="meter-icon">♥</span>
-          <div class="meter-track">
-            <div class="meter-fill love" id="loveFill"></div>
-          </div>
-          <strong id="loveValue">52</strong>
-        </div>
-        <div class="meter-pill">
-          <span class="meter-icon">⚡</span>
-          <div class="meter-track">
-            <div class="meter-fill energy" id="energyFill"></div>
-          </div>
-          <strong id="energyValue">76</strong>
-        </div>
-        <div class="mood-pill" id="moodText">有点害羞</div>
-      </div>
     </section>
 
     <div class="effect-layer" id="effectLayer" aria-hidden="true"></div>
