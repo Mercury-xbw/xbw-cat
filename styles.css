@@ -14,12 +14,15 @@
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 html,
 body {
   width: 100%;
   height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 body {
@@ -41,6 +44,9 @@ body {
 button {
   border: 0;
   font: inherit;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .game {
@@ -311,6 +317,10 @@ button {
   color: #fff;
   font-size: 12px;
   font-weight: 800;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .mic-button.is-recording {

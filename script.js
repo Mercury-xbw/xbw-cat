@@ -269,12 +269,39 @@ function setupUi() {
     button.addEventListener("click", () => handleAction(button.dataset.action));
   });
 
-  micButton.addEventListener("pointerdown", startListening);
-  micButton.addEventListener("pointerup", stopListening);
-  micButton.addEventListener("pointercancel", stopListening);
-  micButton.addEventListener("pointerleave", () => {
-    if (isRecording) stopListening();
+  micButton.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
   });
+
+  micButton.addEventListener("pointerdown", (e) => {
+    if (e.cancelable) e.preventDefault();
+    try {
+      micButton.setPointerCapture(e.pointerId);
+    } catch {}
+    startListening();
+  });
+
+  micButton.addEventListener("pointerup", (e) => {
+    try {
+      micButton.releasePointerCapture(e.pointerId);
+    } catch {}
+    stopListening();
+  });
+
+  micButton.addEventListener("pointercancel", (e) => {
+    try {
+      micButton.releasePointerCapture(e.pointerId);
+    } catch {}
+    stopListening();
+  });
+
+  micButton.addEventListener("touchstart", (e) => {
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false });
+
+  micButton.addEventListener("touchend", (e) => {
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false });
 
   filePickBtn.addEventListener("click", () => filePicker.click());
   filePicker.addEventListener("change", handleManualFileSelect);
