@@ -682,8 +682,24 @@ function say(text) {
   }, 4200);
 }
 
+function triggerHaptic(type = "start") {
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+    try {
+      if (type === "start") {
+        // 短促有力的双段下压触觉震动反馈（类似微信/iOS录音震动）
+        navigator.vibrate([50, 40, 60]);
+      } else if (type === "stop") {
+        // 松开手指时的轻微触觉回弹提示
+        navigator.vibrate(30);
+      }
+    } catch {}
+  }
+}
+
 async function startListening() {
   unlockAudio();
+  triggerHaptic("start");
+  playTone("listen");
   isRecording = true;
   micButton.classList.add("is-recording");
   micLabel.textContent = "正在听...";
@@ -713,6 +729,7 @@ async function startListening() {
 
 function stopListening() {
   if (!isRecording) return;
+  triggerHaptic("stop");
   isRecording = false;
   micButton.classList.remove("is-recording");
   micLabel.textContent = "按住说话";

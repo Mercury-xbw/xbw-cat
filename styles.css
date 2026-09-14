@@ -324,8 +324,33 @@ button {
 }
 
 .mic-button.is-recording {
-  background: var(--rose);
-  transform: translateY(-2px) scale(1.02);
+  background: var(--rose) !important;
+  color: #fff !important;
+  animation: mic-haptic-shake 0.14s linear infinite alternate, mic-pulse-glow 1.2s ease-out infinite;
+}
+
+@keyframes mic-haptic-shake {
+  0% {
+    transform: translateY(-2px) scale(1.05) translate(-1px, 0);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.07) translate(1.5px, -1px) rotate(1deg);
+  }
+  100% {
+    transform: translateY(-2px) scale(1.05) translate(-1px, 1px) rotate(-1deg);
+  }
+}
+
+@keyframes mic-pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 93, 117, 0.8), 0 8px 24px rgba(239, 93, 117, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(239, 93, 117, 0), 0 12px 32px rgba(239, 93, 117, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 93, 117, 0), 0 8px 24px rgba(239, 93, 117, 0.45);
+  }
 }
 
 .action-grid {
